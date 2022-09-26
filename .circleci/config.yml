@@ -268,9 +268,13 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - install_awscli      
       - attach_workspace:
           at: /root
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl
+            pip3 install awscli
       - run:
           name: Get backend url
           command: |
@@ -284,7 +288,6 @@ jobs:
             cd frontend
             npm i
             npm run build
-            ls -l
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
       - destroy-environment:
@@ -306,7 +309,6 @@ jobs:
           TYPEORM_ENTITIES: $TYPEORM_ENTITIES
     steps:
       - checkout
-      - install_awscli
       - add_ssh_keys:
           fingerprints: ["78:b2:2b:b4:f2:0b:70:88:8f:d5:94:09:93:54:36:39"]
       - attach_workspace:
@@ -315,7 +317,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible nodejs npm tar gzip curl
-      #      pip3 install awscli
+            pip3 install awscli
       - run:
           name: Deploy backend
           command: |
@@ -329,33 +331,42 @@ jobs:
               BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
               API_URL="http://${BACKEND_IP}:3030"
               curl "${API_URL}/api/status"          
-      # Here's where you will add some code to rollback on failure 
-      # - destroy-environment:
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
+  smoke-test:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /root
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update curl
+            pip install awscli
+      - run:
+          name: Backend smoke test.
+          command: |
+             BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+             API_URL="http://${BACKEND_IP}:3030"
+             curl "${API_URL}/api/status"          
+      - run:
+          name: Frontend smoke test.
+          command: |
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
+            if curl -s ${URL} | grep "Welcome"
+            then
+              return 0
+            else
+              return 1
+            fi
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      # - revert-migrations:
       #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
-
-#   smoke-test:
-#     docker:
-#       # Lightweight Docker image 
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Get backend url
-#           command: |
-#             # your code here
-#       - run:
-#           name: Backend smoke test.
-#           command: |
-#             # your code here
-#       - run:
-#           name: Frontend smoke test.
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
 
 #   cloudfront-update:
 #     docker:
