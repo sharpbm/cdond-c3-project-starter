@@ -59,6 +59,7 @@ jobs:
           keys: [backend-build]
       - run:
           name: Back-end build
+          working_directory: ./backend
           command: |
             npm i
             npm run build
