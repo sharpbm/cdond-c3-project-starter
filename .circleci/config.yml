@@ -248,9 +248,11 @@ jobs:
           command: |
             cd backend
             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
+            then
                 echo "has been executed successfully."
                 curl https://kvdb.io/EiCbTvMfoEKsrmSYeCAWEL/migration_${CIRCLE_WORKFLOW_ID:0:7} -d "1" --insecure
             elif grep -q "No migrations are pending" ~/project/backend/migrations_dump.txt
+            then
                 echo "No migrations are pending."
                 curl https://kvdb.io/EiCbTvMfoEKsrmSYeCAWEL/migration_${CIRCLE_WORKFLOW_ID:0:7} -d "1" --insecure
             else
