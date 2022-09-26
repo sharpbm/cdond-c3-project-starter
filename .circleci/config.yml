@@ -27,19 +27,19 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
 
   revert-migrations:
-      description: Revert the last migration if successfully run in the current workflow.
-      steps:
-        - run:
-            name: Revert migrations
-            when: on_fail
-            command: |
-              # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-              SUCCESS=$(curl "https://kvdb.io/EiCbTvMfoEKsrmSYeCAWEL/migration_<<parameters.workflow_id>>")
-              if(( $SUCCESS==1 )); 
-              then
-              cd backend
-              npm run migrations:revert
-              fi
+    description: Revert the last migration if successfully run in the current workflow.
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+            SUCCESS=$(curl "https://kvdb.io/EiCbTvMfoEKsrmSYeCAWEL/migration_<<parameters.workflow_id>>")
+            if(( $SUCCESS==1 )); 
+            then
+            cd backend
+            npm run migrations:revert
+            fi
 jobs:
   build-frontend:
     docker:
