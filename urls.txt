@@ -1,4 +1,4 @@
 URL01: https://github.com/sharpbm/cdond-c3-project-starter
-URL02: http://udapeople-cf2d6de.s3-website-us-east-1.amazonaws.com/
+URL02: http://udapeople-4f52892.s3-website-us-east-1.amazonaws.com/
 URL03: https://d121li0v9slthc.cloudfront.net
-URL04: http://34.201.45.65:3030/api/status/
+URL04: http://54.173.84.109:3030/api/status/
