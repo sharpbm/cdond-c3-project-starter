@@ -356,6 +356,7 @@ jobs:
             echo ${URL}
             if curl -s ${URL} | grep "Welcome"
             then
+              echo "Welcome buddy"
               return 1
             else
               return 1
