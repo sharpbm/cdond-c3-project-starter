@@ -143,6 +143,7 @@ jobs:
             name: Back-end scan
             working_directory: ./backend
             command: |
+              npm install
               npm install oauth-sign@^0.9.0
               npm audit fix --audit-level=critical --force
               npm audit fix --force
@@ -187,8 +188,8 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
-      # - destroy-environment:
-      #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
